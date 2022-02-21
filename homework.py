@@ -117,9 +117,9 @@ def main():
         try:
             response = get_api_answer(current_timestamp)
             if len(response['homeworks']) == 0:
-                message = 'Список работ пуст'
-                logging.error(message)
-                raise KeyError(message)
+                error_message = 'Список работ пуст'
+                logging.error(error_message)
+                raise KeyError(error_message)
             homework = check_response(response)
             message = parse_status(homework)
             if message != old_message:
