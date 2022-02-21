@@ -130,7 +130,7 @@ def main():
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logging.error(error, exc_info=True)
-            if message != 'Список работ пуст':
+            if error != 'Список работ пуст':
                 send_message(bot, message)
             time.sleep(RETRY_TIME)
         else:
