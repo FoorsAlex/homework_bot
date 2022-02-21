@@ -31,7 +31,6 @@ logging.basicConfig(level=logging.DEBUG,
 
 def send_message(bot, message):
     """Отправляет смс."""
-
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logging.info('Сообщение успешно отправлено')
@@ -42,7 +41,6 @@ def send_message(bot, message):
 
 def get_api_answer(current_timestamp):
     """Делает запрос к API."""
-
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     try:
@@ -72,7 +70,6 @@ def check_response(response):
     Проверяет полученный ответ API
     на соответствие ожидаемому типу данных.
      """
-
     if ((not isinstance(response, dict))
             or (not isinstance(response['homeworks'], list))):
         message = 'Ответ API не является словарем'
@@ -83,7 +80,6 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает статус работы."""
-
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
     if homework_status in HOMEWORK_STATUSES:
@@ -100,7 +96,6 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет наличие токенов."""
-
     if PRACTICUM_TOKEN and TELEGRAM_TOKEN and TELEGRAM_CHAT_ID:
         return True
     else:
@@ -117,7 +112,6 @@ def check_tokens():
 
 def main():
     """Основная логика работы бота."""
-
     check_tokens()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = 0
