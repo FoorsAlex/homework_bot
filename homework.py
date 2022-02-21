@@ -66,10 +66,7 @@ def get_api_answer(current_timestamp):
 
 
 def check_response(response):
-    """
-    Проверяет полученный ответ API
-    на соответствие ожидаемому типу данных.
-     """
+    """Проверяет полученный ответ API."""
     if ((not isinstance(response, dict))
             or (not isinstance(response['homeworks'], list))):
         message = 'Ответ API не является словарем'
