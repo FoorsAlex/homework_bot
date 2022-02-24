@@ -22,11 +22,11 @@ HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-TOKENS_VALUES = {
-    'PRACTICUM_TOKEN': PRACTICUM_TOKEN,
-    'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
-    'TELEGRAM_CHAT_ID': TELEGRAM_CHAT_ID
-}
+TOKENS = (
+    'PRACTICUM_TOKEN',
+    'TELEGRAM_TOKEN',
+    'TELEGRAM_CHAT_ID'
+)
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s, %(levelname)s, %(message)s',
@@ -106,10 +106,10 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет наличие токенов."""
-    message = 'Отсутствует обязательная переменная окружения:'
-    for token in TOKENS_VALUES:
-        if not TOKENS_VALUES[token]:
-            logging.critical(f'{message} {token}')
+    for name in TOKENS:
+        token = globals()[name]
+        if token is None or token == '':
+            logging.critical(f'Отсутсвует токен: {name}')
             return False
     return True
 
@@ -137,10 +137,8 @@ def main():
             logging.error(error, exc_info=True)
             error_message = f'Сбой в работе программы: {error}'
             if error_message != old_error_message:
-                answer_func = send_message(bot, error_message)
-            if answer_func:
-                old_error_message = error_message
-
+                if send_message(bot, error_message):
+                    old_error_message = error_message
             time.sleep(RETRY_TIME)
         else:
             time.sleep(1000)
