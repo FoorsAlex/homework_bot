@@ -22,6 +22,11 @@ HOMEWORK_VERDICTS = {
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
+TOKENS_VALUES = {
+    'PRACTICUM_TOKEN': PRACTICUM_TOKEN,
+    'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
+    'TELEGRAM_CHAT_ID': TELEGRAM_CHAT_ID
+}
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s, %(levelname)s, %(message)s',
@@ -33,8 +38,10 @@ def send_message(bot, message):
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
         logging.info('Сообщение успешно отправлено')
+        return True
     except Exception as error:
         logging.error(error, exc_info=True)
+        return False
 
 
 def get_api_answer(current_timestamp):
@@ -99,14 +106,9 @@ def parse_status(homework):
 
 def check_tokens():
     """Проверяет наличие токенов."""
-    tokens_value = {
-        'PRACTICUM_TOKEN': PRACTICUM_TOKEN,
-        'TELEGRAM_TOKEN': TELEGRAM_TOKEN,
-        'TELEGRAM_CHAT_ID': TELEGRAM_CHAT_ID
-    }
     message = 'Отсутствует обязательная переменная окружения:'
-    for token in tokens_value:
-        if not tokens_value[token]:
+    for token in TOKENS_VALUES:
+        if not TOKENS_VALUES[token]:
             logging.critical(f'{message} {token}')
             return False
     return True
@@ -135,8 +137,10 @@ def main():
             logging.error(error, exc_info=True)
             error_message = f'Сбой в работе программы: {error}'
             if error_message != old_error_message:
+                answer_func = send_message(bot, error_message)
+            if answer_func:
                 old_error_message = error_message
-                send_message(bot, error_message)
+
             time.sleep(RETRY_TIME)
         else:
             time.sleep(1000)
