@@ -3,7 +3,7 @@ import os
 import time
 from http import HTTPStatus
 from json import JSONDecodeError
-
+import datetime as dt
 import requests
 import telegram
 from dotenv import load_dotenv
@@ -47,7 +47,9 @@ def send_message(bot, message):
 def get_api_answer(current_timestamp):
     """Делает запрос к API."""
     timestamp = current_timestamp or int(time.time())
-    params = {'from_date': timestamp}
+    time_delta = dt.timedelta(days=7)
+    time_delta_seconds = int(time_delta.total_seconds())
+    params = {'from_date': timestamp-time_delta_seconds}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
         if response.status_code != HTTPStatus.OK:
@@ -120,6 +122,7 @@ def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = 0
     old_error_message = ''
+    old_message = ''
     while True:
         try:
             response = get_api_answer(current_timestamp)
@@ -129,7 +132,9 @@ def main():
                 raise KeyError(error_message)
             homework = check_response(response)
             message = parse_status(homework[0])
-            send_message(bot, message)
+            if message != old_message:
+                if send_message(bot, message):
+                    old_message = message
             current_timestamp = response['current_date']
             time.sleep(RETRY_TIME)
 
